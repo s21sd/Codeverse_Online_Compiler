@@ -30,34 +30,38 @@ router.post('/signup', async (req, res) => {
         })
 
     } catch (error) {
-        return res.status(505).json({ message: error.message })
+        return res.status(505).json({ message: "Error in the sign up" })
     }
 
 })
 
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body
-        let user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: 'User Not Found' })
+        const { email, password } = req.body;
+        const existingUser = await User.findOne({ email }); // check for user existence
+        if (!existingUser) {
+            return res.status(401).json({ message: "Invalid Credential" })
         }
-        console.log(user.password)
-        const isMatch = await bcrypt.compare(password, user.password)
-        if (!isMatch) {
-            return res.status(404).json({ message: 'Invalid Credentials' })
+        console.log(existingUser.password)
+        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: "Invalid credentials" });
         }
-        const authToken = jwt.sign({ user: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10m' })
-        await user.save();
-        res.cookie('token', authToken, { httpOnly: true })
+        const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '50m' });
+        existingUser.token = token;
+        await existingUser.save();
+        res.cookie('token', token, { httpOnly: true })
         res.status(200).json({
             token,
             message: "User logged in successfully"
         });
     } catch (error) {
-        return res.status(509).json({ message: error.message })
-
+        console.log(error);
     }
+})
+
+router.get('/checkLogin', checkAuth, async (req, res) => {
+    res.status(200).json({ message: "User is logged in" }, res.ok);
 })
 
 module.exports = router;
