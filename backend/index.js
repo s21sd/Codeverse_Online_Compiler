@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('./db');
 const authroutes = require('./routes/authroutes')
+const coderoutes = require('./routes/coderoutes')
 const app = express();
 const server = http.createServer(app)
 app.use(cors({
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
     res.send('Api is running...');
 });
 app.use('/auth', authroutes)
+app.use('/code', coderoutes)
 
 
 app.listen(PORT, () => {
