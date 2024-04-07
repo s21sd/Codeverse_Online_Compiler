@@ -12,11 +12,12 @@ router.get('/test', (req, res) => {
 router.post('/compile', (req, res) => {
     try {
         const { code, input, language } = req.body;
+        console.log(code, language);
         if (!language || !code) {
             return res.status(509).json({ message: "Code and language is required!" })
         }
         // Handling the cpp and c language
-        if (language == 'cpp' || language == 'c') {
+        if (language === 'cpp' || language === 'c') {
             if (!input) {
                 var envData = { OS: "windows", cmd: "g++" };
                 compiler.compileCPP(envData, code, function (data) {
@@ -35,7 +36,7 @@ router.post('/compile', (req, res) => {
         }
 
         // Handing the java language
-        if (language == 'java') {
+        if (language === 'java') {
             if (!input) {
                 var envData = { OS: "windows" };
                 compiler.compileJava(envData, code, function (data) {
@@ -52,7 +53,7 @@ router.post('/compile', (req, res) => {
 
         // Handling the python language
 
-        if (language == 'python') {
+        if (language === 'python') {
             if (!input) {
                 var envData = { OS: "windows" };
                 compiler.compilePython(envData, code, function (data) {
