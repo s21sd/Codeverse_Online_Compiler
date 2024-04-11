@@ -1,0 +1,1 @@
+print("The code output is ", 2+4)
