@@ -12,7 +12,7 @@ router.get('/test', (req, res) => {
 router.post('/compile', (req, res) => {
     try {
         const { code, input, language } = req.body;
-        console.log(code, language);
+        console.log(code, language, input);
         if (!language || !code) {
             return res.status(509).json({ message: "Code and language is required!" })
         }
