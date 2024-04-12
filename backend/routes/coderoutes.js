@@ -19,7 +19,7 @@ router.post('/compile', (req, res) => {
         // Handling the cpp and c language
         if (language === 'cpp' || language === 'c') {
             if (!input) {
-                var envData = { OS: "windows", cmd: "g++" };
+                var envData = { OS: "windows", cmd: "g++", options: { timeout: 1000 } };
                 compiler.compileCPP(envData, code, function (data) {
                     res.send(data);
                     //data.error = error message 
@@ -28,7 +28,7 @@ router.post('/compile', (req, res) => {
                 //res is the response object
             }
             else {
-                var envData = { OS: "windows", cmd: "g++" };
+                var envData = { OS: "windows", cmd: "g++", options: { timeout: 1000 } };
                 compiler.compileCPPWithInput(envData, code, input, function (data) {
                     res.send(data);
                 });
@@ -69,6 +69,7 @@ router.post('/compile', (req, res) => {
                 });
             }
         }
+        compiler.flushSync();
 
     } catch (error) {
         return res.status(503).json({ message: error.message })
