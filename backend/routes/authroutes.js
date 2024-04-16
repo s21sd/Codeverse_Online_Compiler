@@ -42,12 +42,11 @@ router.post('/login', async (req, res) => {
         if (!existingUser) {
             return res.status(401).json({ message: "Invalid Credential" })
         }
-        console.log(existingUser.password)
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordCorrect) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
-        const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '50m' });
+        const token = jwt.sign({ _id: existingUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '50m' });
         existingUser.token = token;
         await existingUser.save();
         res.cookie('token', token, { httpOnly: true })
@@ -61,7 +60,7 @@ router.post('/login', async (req, res) => {
 })
 
 router.get('/checkLogin', checkAuth, async (req, res) => {
-    res.status(200).json({ message: "User is logged in" }, res.ok);
+    res.status(200).json({ message: "User is logged in" });
 })
 
 module.exports = router;
