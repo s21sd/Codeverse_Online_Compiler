@@ -80,30 +80,30 @@ router.post('/compile', (req, res) => {
 });
 
 router.post('/savecode', authenticateToken, async (req, res) => {
-    const { code, language } = req.body;
-    let isAuthenicated = false
-    if (!code || !language) {
-        return res.status(509).send({
-            message: "Please Write some code"
-        })
-    }
+    const { code } = req.body;
+    
+    // if (!code || !language) {
+    //     return res.status(509).send({
+    //         message: "Please Write some code"
+    //     })
+    // }
     const user = await User.findOne(req._id)
+    console.log(user)
     if (!user) {
         return res.status(404).send({ message: "User not found!" })
     }
-    isAuthenicated = true
     // after finding the user Now I want to save the code for the specific user
     try {
-        const newCode = await Code.create({
-            code: code,
-            language: language
+        const newCode = new Code({
+            user: user._id,
+            code: code.code,
+            language: code.language
+        });
+        await newCode.save();
+        return res.status(200).send({
+            message: "Code Saved Successfully"
         })
-        console.log(newCode)
-        if (isAuthenicated && user) {
-            // console.log(newCode)
-            user?.savedCodes.push(newCode._id);
-            await user.save();
-        }
+
     } catch (error) {
         return res.status(404).send({ message: "Error in saving the code", error })
     }

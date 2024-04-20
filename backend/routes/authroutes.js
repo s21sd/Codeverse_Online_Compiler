@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
-        const token = jwt.sign({ _id: existingUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '50m' });
+        const token = jwt.sign({ _id: existingUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '20m' });
         existingUser.token = token;
         await existingUser.save();
         res.cookie('token', token, { httpOnly: true })
