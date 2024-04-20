@@ -11,7 +11,8 @@ const codeSchema = new mongoose.Schema({
     language: {
         type: String,
         required: true
-    }
+    },
+    
 })
 
 module.exports = mongoose.model('Code', codeSchema);

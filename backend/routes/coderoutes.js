@@ -3,6 +3,8 @@ var compiler = require('compilex');
 var options = { stats: true };
 compiler.init(options);
 const Code = require('../models/Code');
+const authenticateToken = require('../middlewares/checkAuthMiddleWare');
+const User = require('../models/User');
 const router = express.Router();
 
 router.get('/test', (req, res) => {
@@ -76,5 +78,37 @@ router.post('/compile', (req, res) => {
     }
 
 });
+
+router.post('/savecode', authenticateToken, async (req, res) => {
+    const { code, language } = req.body;
+    let isAuthenicated = false
+    if (!code || !language) {
+        return res.status(509).send({
+            message: "Please Write some code"
+        })
+    }
+    const user = await User.findOne(req._id)
+    if (!user) {
+        return res.status(404).send({ message: "User not found!" })
+    }
+    isAuthenicated = true
+    // after finding the user Now I want to save the code for the specific user
+    try {
+        const newCode = await Code.create({
+            code: code,
+            language: language
+        })
+        console.log(newCode)
+        if (isAuthenicated && user) {
+            // console.log(newCode)
+            user?.savedCodes.push(newCode._id);
+            await user.save();
+        }
+    } catch (error) {
+        return res.status(404).send({ message: "Error in saving the code", error })
+    }
+
+    // console.log(existingUser)
+})
 
 module.exports = router;
