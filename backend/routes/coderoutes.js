@@ -81,12 +81,12 @@ router.post('/compile', (req, res) => {
 
 router.post('/savecode', authenticateToken, async (req, res) => {
     const { code } = req.body;
-    
-    // if (!code || !language) {
-    //     return res.status(509).send({
-    //         message: "Please Write some code"
-    //     })
-    // }
+
+    if (!code || !language) {
+        return res.status(509).send({
+            message: "Please Write some code"
+        })
+    }
     const user = await User.findOne(req._id)
     console.log(user)
     if (!user) {
@@ -109,6 +109,42 @@ router.post('/savecode', authenticateToken, async (req, res) => {
     }
 
     // console.log(existingUser)
+})
+router.post('/mycodes', authenticateToken, async (req, res) => {
+    const userId = req._id;
+    
+    try {
+        const user1 = await User.findById(userId).populate({
+            path: "code",
+            options: { sort: { createdAt: -1 } }
+        })
+      
+        if (!user1) {
+            return res.status(404).send({
+                message: "User Not Found"
+            })
+        }
+
+        return res.status(200).send({
+            code: user1.code,
+            language: user1.language
+        });
+
+    } catch (error) {
+        return res.status(404).send({
+            message: "Error in Getting my codes"
+        })
+    }
+})
+router.post("/getallcode", async (req, res) => {
+    try {
+        const allCodes = await Code.find().sort({ createdAt: -1 });
+        return res.status(200).send(allCodes);
+    } catch (error) {
+        return res.status(404).send({ message: "Error in the fetching the codes" })
+    }
+
+
 })
 
 module.exports = router;
