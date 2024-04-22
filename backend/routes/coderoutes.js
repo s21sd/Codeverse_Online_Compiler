@@ -82,11 +82,11 @@ router.post('/compile', (req, res) => {
 router.post('/savecode', authenticateToken, async (req, res) => {
     const { code } = req.body;
 
-    if (!code || !language) {
-        return res.status(509).send({
-            message: "Please Write some code"
-        })
-    }
+    // if (!code || !language) {
+    //     return res.status(509).send({
+    //         message: "Please Write some code"
+    //     })
+    // }
     const user = await User.findOne(req._id)
     console.log(user)
     if (!user) {
